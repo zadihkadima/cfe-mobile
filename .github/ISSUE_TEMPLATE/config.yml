@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability
-    url: https://github.com/sayeedkhalshi/cfe-mobile/security/advisories/new
+    url: https://github.com/zadihkadima/cfe-mobile/security/advisories/new
     about: Report privately. Never open a public issue for a vulnerability.
