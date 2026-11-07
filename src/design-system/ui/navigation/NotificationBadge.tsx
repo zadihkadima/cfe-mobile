@@ -6,6 +6,7 @@ interface Props {
   count?: number;
 }
 
+
 export function NotificationBadge({
   count = 0,
 }: Props) {
