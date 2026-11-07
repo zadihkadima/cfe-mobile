@@ -54,7 +54,7 @@
     "jest-expo": "~56.0.5",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.5.11",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.3.4",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.65.0"
   },
