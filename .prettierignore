@@ -1,0 +1,12 @@
+# Prettier must not rewrite generated output, native project files or
+# dependency trees. Keeping this list beside .prettierrc.yaml means a
+# `format` run is safe to execute without arguments.
+
+node_modules/
+android/
+ios/
+.expo/
+dist/
+coverage/
+package-lock.json
+expo-env.d.ts

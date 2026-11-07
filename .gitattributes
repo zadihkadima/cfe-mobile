@@ -1,0 +1,45 @@
+# Normalise line endings so Windows checkouts do not produce noisy diffs or
+# break the shell scripts and Gradle wrappers that run inside Linux CI.
+* text=auto eol=lf
+
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+
+# The Gradle wrapper is executed directly by CI; CRLF would make it unrunnable.
+gradlew text eol=lf
+# The Windows wrapper is only ever executed by cmd.exe, which requires CRLF.
+gradlew.bat text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.jar binary
+*.keystore binary
+
+# Lockfiles are generated. Excluding them from language statistics keeps the
+# repository language breakdown honest, and collapsing them keeps reviews
+# focused on the `package.json` change that caused the lockfile churn.
+package-lock.json linguist-generated=true
+ios/Podfile.lock linguist-generated=true
+
+# Native project scaffolding is produced by `expo prebuild` and is not
+# hand-authored code.
+android/** linguist-generated=true
+ios/** linguist-generated=true

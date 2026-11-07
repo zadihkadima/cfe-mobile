@@ -1,0 +1,62 @@
+version: 2
+
+updates:
+  # JavaScript dependencies.
+  #
+  # Expo pins a tested matrix of React Native, React and native module
+  # versions. Letting Dependabot raise those individually produces builds that
+  # install cleanly and then crash on device, so the packages Expo owns are
+  # ignored here and are upgraded together via `npx expo install --fix` when
+  # the SDK is bumped deliberately.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      include: scope
+    groups:
+      # Patch and minor bumps are grouped into one PR to reduce review noise;
+      # majors stay separate because they can carry breaking changes.
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch
+      # Lint and formatting tooling never ships to users, so it can move as a
+      # single batch that is verified entirely by `npm run verify`.
+      dev-tooling:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "prettier"
+    ignore:
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "@expo/*"
+      - dependency-name: "jest-expo"
+
+  # GitHub Actions are pinned dependencies too, and a compromised action has
+  # full access to the CI environment and to any signing credentials.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
+
+  # The Android build is reproduced from Gradle's own dependency graph, which
+  # npm auditing does not see at all.
+  - package-ecosystem: gradle
+    directory: "/android"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "build"

@@ -1,0 +1,27 @@
+# Code owners.
+#
+# Listed owners are automatically requested for review, and branch protection
+# can require their approval before a merge.
+
+# Default owner for everything not matched below.
+*                           @sayeedkhalshi
+
+# Security-sensitive areas always need an explicit review. On a mobile client
+# these are the places where credentials live, where tokens are attached to
+# requests, and where authorization decisions are cached.
+/src/core/auth/             @sayeedkhalshi
+/src/core/api/              @sayeedkhalshi
+/src/core/storage/          @sayeedkhalshi
+
+# Build, release and infrastructure.
+/.github/                   @sayeedkhalshi
+/app.json                   @sayeedkhalshi
+/eslint.config.mjs          @sayeedkhalshi
+/jest.config.js             @sayeedkhalshi
+/tsconfig.json              @sayeedkhalshi
+/scripts/                   @sayeedkhalshi
+
+# Native project configuration. A change here can break a store build in ways
+# that no JavaScript test will catch.
+/android/                   @sayeedkhalshi
+/ios/                       @sayeedkhalshi

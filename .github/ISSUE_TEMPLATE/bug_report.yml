@@ -1,0 +1,94 @@
+name: Bug report
+description: Something behaves incorrectly in the mobile app
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report security vulnerabilities here. Follow `SECURITY.md`.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Sign in as ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: input
+    id: request_id
+    attributes:
+      label: X-Request-ID
+      description: >-
+        The correlation id from the failing response, if available. This is what
+        lets the failure be matched against the backend logs.
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - iOS
+        - Android
+        - Both
+    validations:
+      required: true
+
+  - type: input
+    id: os_version
+    attributes:
+      label: OS version and device
+      placeholder: iOS 18.2 on iPhone 14 Pro, or Android 15 on Pixel 8
+    validations:
+      required: true
+
+  - type: dropdown
+    id: build
+    attributes:
+      label: How the app was run
+      description: >-
+        Expo Go, a development build and a store build can behave differently,
+        particularly around native modules and secure storage.
+      options:
+        - Expo Go
+        - Development build
+        - Preview / internal build
+        - Production build from the store
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Backend environment
+      options:
+        - local
+        - staging
+        - production
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App version and commit SHA
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or stack trace
+      description: Redact tokens and personal data before pasting.
+      render: shell

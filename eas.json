@@ -1,0 +1,59 @@
+{
+  "cli": {
+    "version": ">= 21.4.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDevelopmentDebug"
+      },
+      "env": {
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_API_URL": "https://app.cfetaxservices.com/api/v1",
+        "EXPO_PUBLIC_WS_URL": "wss://app.cfetaxservices.com/api/v1/ws"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assemblePreviewRelease"
+      },
+      "env": {
+        "APP_VARIANT": "preview",
+        "EXPO_PUBLIC_API_URL": "https://app.cfetaxservices.com/api/v1",
+        "EXPO_PUBLIC_WS_URL": "wss://app.cfetaxservices.com/api/v1/ws"
+      }
+    },
+    "production": {
+      "environment": "production",
+      "autoIncrement": true,
+      "distribution": "store",
+      "android": {
+        "gradleCommand": ":app:bundleProductionRelease"
+      },
+      "ios": {
+        "simulator": false,
+        "autoIncrement": "buildNumber"
+      },
+      "env": {
+        "APP_VARIANT": "production",
+        "EXPO_PUBLIC_API_URL": "https://app.cfetaxservices.com/api/v1",
+        "EXPO_PUBLIC_WS_URL": "wss://app.cfetaxservices.com/api/v1/ws"
+      }
+    },
+    "production-apk": {
+      "extends": "production",
+      "environment": "production",
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleProductionRelease"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

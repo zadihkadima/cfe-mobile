@@ -1,0 +1,21 @@
+# Formatting is owned entirely by Prettier so that no review comment ever needs
+# to be about whitespace. ESLint's stylistic rules are switched off by
+# eslint-config-prettier, leaving one tool responsible for one concern.
+
+# Double quotes match the existing codebase, so adopting Prettier does not
+# rewrite every string in the repository on the first run.
+singleQuote: false
+
+semi: true
+trailingComma: "all"
+printWidth: 80
+tabWidth: 2
+useTabs: false
+arrowParens: "always"
+endOfLine: "lf"
+
+# Sorts Tailwind class names into a canonical order. The plugin was already a
+# dependency before Prettier itself was installed, which meant it had never
+# actually run.
+plugins:
+  - prettier-plugin-tailwindcss

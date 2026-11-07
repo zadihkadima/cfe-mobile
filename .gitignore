@@ -1,0 +1,55 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+# Everything except the documented template is ignored, so a developer cannot
+# accidentally commit a working configuration.
+.env
+.env.*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+
+# Firebase credentials.
+#
+# google-services.json identifies this app to FCM; the admin SDK key authorises
+# sending on behalf of the whole project. Neither is committed -- they reach a
+# build as EAS file secrets instead. The second is the more serious of the two:
+# it is a private key, and a leak is a rotation rather than a revert.
+google-services.json
+*-firebase-adminsdk-*.json
+
+# generated native folders
+/ios
+/android
+coverage/

@@ -1,0 +1,27 @@
+{
+  "$comment": [
+    "Advisories that are knowingly accepted, with the reason and a date by which",
+    "the decision must be revisited. An entry here is a decision, not a mute:",
+    "the check fails once `reviewBy` passes, which forces the judgement to be",
+    "made again rather than inherited silently by whoever is on call in a year.",
+    "",
+    "Only add an advisory that cannot reach production code. Anything reachable",
+    "from the shipped bundle must be fixed, not listed."
+  ],
+  "allow": [
+    {
+      "id": "GHSA-mh99-v99m-4gvg",
+      "module": "brace-expansion",
+      "severity": "high",
+      "reason": "Denial of service via unbounded glob expansion. Reached only through jest, glob and Expo's fingerprint tooling, all of which run on a developer machine or a CI runner over paths this repository controls. It is not part of the React Native bundle and processes no untrusted input. The only published fix is brace-expansion 5.0.8, which is incompatible with the minimatch 3.x that Jest 29 depends on, so upgrading would mean downgrading the test runner.",
+      "reviewBy": "2027-01-31"
+    },
+    {
+      "id": "GHSA-w5hq-g745-h8pq",
+      "module": "uuid",
+      "severity": "moderate",
+      "reason": "Missing buffer bounds check in uuid v3/v5/v6 when an explicit buffer is supplied. Pulled in transitively by @expo/config-plugins through xcode, which runs only during native prebuild on a developer machine. The affected code paths take no buffer argument here, and the package is absent from the runtime bundle. npm's only remediation is a downgrade of expo to 46, which is not viable.",
+      "reviewBy": "2027-01-31"
+    }
+  ]
+}

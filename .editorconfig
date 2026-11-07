@@ -1,0 +1,35 @@
+# Consistent whitespace across editors and operating systems.
+# https://editorconfig.org
+#
+# Prettier is the authority for files it formats; this file exists so that
+# editors behave correctly before Prettier ever runs, and so that the files
+# Prettier ignores (Gradle, Ruby, native project files) still get sane defaults.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+# Trailing spaces are significant for hard line breaks in Markdown.
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+
+# Native toolchains have their own conventions and their generators will
+# rewrite these files; matching those conventions avoids churn.
+[*.{java,kt,kts,gradle}]
+indent_size = 4
+
+[*.{pbxproj,xcworkspacedata,xcscheme,plist}]
+indent_style = tab
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+[{Podfile,*.podspec,Gemfile}]
+indent_size = 2

@@ -1,0 +1,121 @@
+name: mobile-ci
+
+# The mobile app previously had no automated checks at all. That is how a form
+# came to submit PascalCase field names to an API expecting snake_case, breaking
+# client creation and the client edit screen, without anyone noticing: the
+# mismatch was a compile error the whole time, but nothing ever ran the
+# compiler.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Cancel superseded runs on the same ref. A pull request that is pushed to
+# repeatedly should not queue a run per push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `npm ci` rather than `npm install`, so the lockfile is honoured exactly
+      # and CI cannot silently pass against a different dependency tree than the
+      # one that will ship.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Errors fail the build; warnings do not. The warning set is currently
+      # the `any` values arriving from untyped dependencies, plus the React
+      # Compiler rules that are not yet adopted. Both are visible in the log
+      # and counted, and neither blocks a merge, so the gate stays honest: it
+      # fails only for defects the team has agreed are defects.
+      #
+      # Enabling this at all was preceded by fixing 96 existing violations,
+      # 73 of which were unhandled or discarded promises. A lint job added
+      # before that work would have failed on every commit and been switched
+      # off within a week.
+      - name: Lint
+        run: npm run lint
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `--ci` makes an unexpectedly written snapshot a failure rather than a
+      # silent commit-me-later. `--runInBand` avoids workers competing for the
+      # two cores a hosted runner provides. `--coverage` enforces the ratchet
+      # thresholds in jest.config.js, so a pull request that deletes tests
+      # fails here instead of quietly lowering the bar.
+      - name: Run tests
+        run: npm test -- --ci --runInBand --coverage
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Not a bare `npm audit`. Every high or critical advisory fails the build
+      # unless it is recorded in .audit-allowlist.json with a justification and
+      # an expiry date, so an accepted risk is a dated decision rather than a
+      # permanent mute. See scripts/audit-check.mjs.
+      - name: Known vulnerabilities in dependencies
+        run: npm run audit:ci

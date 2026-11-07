@@ -1,0 +1,71 @@
+name: Feature request
+description: Propose new or changed functionality
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: >-
+        Describe the user problem, not the solution. Who is blocked, and what
+        are they doing today instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who is this for?
+      options:
+        - Client
+        - Manager
+        - Admin
+        - More than one role
+    validations:
+      required: true
+
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Does this need a backend change?
+      description: >-
+        If yes, open the corresponding issue on `cfe-backend` and link it. The
+        client cannot ship ahead of an API it depends on.
+      options:
+        - "No"
+        - "Yes"
+        - Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: native
+    attributes:
+      label: Does this need a new native build?
+      description: >-
+        Anything that adds a native module, permission or capability cannot be
+        delivered as an over-the-air update.
+      options:
+        - "No, JavaScript only"
+        - "Yes"
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How will we know this is done and correct?
