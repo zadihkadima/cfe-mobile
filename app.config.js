@@ -31,6 +31,8 @@ const baseConfig = {
   userInterfaceStyle: "automatic",
   ios: {
     supportsTablet: true,
+    // Kept for Play Console continuity: changing the bundle/package ID would
+    // orphan existing installs and break FCM registration.
     bundleIdentifier: "com.sayeedkhalshi.cfemobile",
   },
   android: {
@@ -54,6 +56,8 @@ const baseConfig = {
       monochromeImage: "./assets/android-icon-monochrome.png",
     },
     predictiveBackGestureEnabled: false,
+    // Kept for Play Console continuity: changing the bundle/package ID would
+    // orphan existing installs and break FCM registration.
     package: "com.sayeedkhalshi.cfemobile",
   },
   web: {
@@ -139,6 +143,8 @@ module.exports = () => {
 
   config.name = variant.name;
   config.scheme = variant.scheme;
+  // Kept for Play Console continuity: changing the bundle/package ID would
+  // orphan existing installs and break FCM registration.
   config.ios.bundleIdentifier = `com.sayeedkhalshi.cfemobile${variant.packageSuffix}`;
 
   return config;
