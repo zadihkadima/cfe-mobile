@@ -15,8 +15,9 @@ import { useTheme } from "@/design-system/theme/useTheme";
 import {
   markAllNotificationsRead,
   markNotificationRead,
+  toggleNotificationRead,
 } from "../api/api";
-import { AppNotification } from "../api/types";
+import { AppNotification, NotificationListResponse } from "../api/types";
 import { useNotifications } from "../hooks/useNotifications";
 import { describeNotification } from "../lib/describeNotification";
 import { resolveEntityRoute, ViewerRole } from "../lib/notificationRoute";
@@ -37,9 +38,11 @@ import { resolveEntityRoute, ViewerRole } from "../lib/notificationRoute";
 function NotificationRow({
   notification,
   role,
+  onToggleRead,
 }: {
   notification: AppNotification;
   role: ViewerRole;
+  onToggleRead: (notification: AppNotification) => void;
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -72,6 +75,14 @@ function NotificationRow({
     }
   };
 
+  /*
+   * Long-press flips the notification the other way. A tap still opens it, so
+   * the gesture lives alongside that rather than replacing it -- and a row
+   * whose entity route has rotted still has something to do, because the
+   * toggle does not depend on the route.
+   */
+  const onLongPress = () => onToggleRead(notification);
+
   return (
     <Pressable
       className="flex-row items-start gap-3 rounded-2xl px-3 py-3 active:bg-muted dark:active:bg-dark-muted"
@@ -79,7 +90,9 @@ function NotificationRow({
       // than press and stay put, which reads as a broken screen.
       disabled={!href && !unread}
       onPress={() => void markReadAndOpen()}
+      onLongPress={onLongPress}
       accessibilityRole="button"
+      accessibilityHint="Double tap to open. Long press to toggle read state."
       // Spoken as one sentence. Left to the default, a reader would hear the
       // name, the action and the time as three separate stops.
       accessibilityLabel={[
@@ -192,6 +205,45 @@ export function NotificationsScreen({
     });
   };
 
+  /*
+   * Flip one notification between read and unread, and let the server's answer
+   * be the truth the cache shows.
+   *
+   * Both badge queries are refreshed alongside the list: the list count and the
+   * per-workspace counts are computed by the server from the same rows, so a
+   * toggle that updated one and not the others would leave the header badge
+   * disagreeing with the screen beneath it.
+   */
+  const toggleRead = async (notification: AppNotification) => {
+    try {
+      const updated = await toggleNotificationRead(notification.id);
+
+      queryClient.setQueryData<NotificationListResponse>(
+        queryKeys.notifications.all,
+        (previous) =>
+          previous
+            ? {
+                ...previous,
+                items: previous.items.map((item) =>
+                  item.id === updated.id ? updated : item,
+                ),
+              }
+            : previous,
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.notifications.all,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.notifications.unreadByWorkspace,
+        }),
+      ]);
+    } catch {
+      // Left as it was; the next toggle will try again.
+    }
+  };
+
   const unread = data?.unread ?? 0;
 
   const content = (
@@ -233,6 +285,7 @@ export function NotificationsScreen({
             key={notification.id}
             notification={notification}
             role={role}
+            onToggleRead={toggleRead}
           />
         ))}
       </QueryState>

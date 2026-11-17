@@ -25,6 +25,25 @@ export const createClientSchema = z.object({
     .string()
     .trim()
     .email("Enter a valid email address"),
+
+  // Optional: `date_of_birth` and `reason_for_consultation` are not required
+  // by the feedback, and `client_code` is assigned by the firm rather than
+  // typed here, so all three may simply be left blank.
+  date_of_birth: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a date as YYYY-MM-DD")
+    .optional(),
+
+  client_code: z
+    .string()
+    .trim()
+    .optional(),
+
+  reason_for_consultation: z
+    .string()
+    .trim()
+    .optional(),
 });
 
 export type CreateClientFormData =

@@ -12,6 +12,24 @@ export type Client = {
   tax_id?: string;
   social_security_number?: string;
 
+  /**
+   * Birthdate as `YYYY-MM-DD`, absent until the client supplies it. Optional
+   * because an invited client has not completed onboarding yet.
+   */
+  date_of_birth?: string | null;
+
+  /**
+   * Firm-assigned identifier shown to the client. Optional because it is only
+   * assigned once the account is provisioned.
+   */
+  client_code?: string | null;
+
+  /**
+   * Free-text reason the client is consulting the firm. Optional by design:
+   * the feedback asked for it as an optional field, so its absence is normal.
+   */
+  reason_for_consultation?: string | null;
+
   created_at: string;
   updated_at: string;
 
@@ -36,6 +54,10 @@ export type CreateClientRequest = {
   first_name: string;
   last_name: string;
   email: string;
+
+  date_of_birth?: string;
+  client_code?: string;
+  reason_for_consultation?: string;
 };
 
 export type UpdateClientRequest = {
@@ -45,6 +67,10 @@ export type UpdateClientRequest = {
   tax_id?: string;
   social_security_number?: string;
   is_active?: boolean;
+
+  date_of_birth?: string;
+  client_code?: string;
+  reason_for_consultation?: string;
 };
 
 export type ListClientsParams = {

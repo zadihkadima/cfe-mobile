@@ -23,6 +23,7 @@ import {
 } from "@/modules/admin/schemas/createClientSchema";
 
 import { useFieldChain } from "@/shared/hooks/useFieldChain";
+import { DateField } from "@/design-system/ui/input/DateField";
 
 type Props = {
   defaultValues?: Partial<CreateClientFormData>;
@@ -58,12 +59,25 @@ export function ClientForm({
         last_name: "",
         email: "",
 
+        date_of_birth: "",
+        client_code: "",
+        reason_for_consultation: "",
+
         ...defaultValues,
       },
     });
 
+  // `reason_for_consultation` is deliberately absent: it is multiline, and a
+  // multiline field must not be chained -- its return key inserts a newline.
+  // `client_code` closes the chain, so its key reads "done".
   const chain = useFieldChain(
-    ["first_name", "last_name", "email"],
+    [
+      "first_name",
+      "last_name",
+      "email",
+      "date_of_birth",
+      "client_code",
+    ],
     {
       onSubmit: () =>
         void handleSubmit(onSubmit)(),
@@ -143,6 +157,61 @@ export function ClientForm({
           {errors.email.message}
         </Text>
       )}
+
+      <Controller
+        control={control}
+        name="date_of_birth"
+        render={({ field }) => (
+          // No chain.field here: DateField is a picker, not a text input, and
+          // the next key on a date field is "next" toward the code below.
+          <DateField
+            label="Date of birth"
+            value={field.value ?? ""}
+            onChange={field.onChange}
+            error={errors.date_of_birth?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="client_code"
+        render={({ field }) => (
+          <TextInput
+            className="border border-border dark:border-dark-border rounded-lg p-3.5 mb-2 bg-surface dark:bg-dark-surface text-text dark:text-dark-text placeholder:text-text-secondary"
+            placeholder="Client code"
+            autoCapitalize="characters"
+            value={field.value}
+            onBlur={field.onBlur}
+            onChangeText={field.onChange}
+            placeholderTextColor={theme.colors.textMuted}
+            {...chain.field("client_code")}
+          />
+        )}
+      />
+
+      {errors.client_code && (
+        <Text className="text-danger dark:text-dark-danger mb-3">
+          {errors.client_code.message}
+        </Text>
+      )}
+
+      <Controller
+        control={control}
+        name="reason_for_consultation"
+        render={({ field }) => (
+          <TextInput
+            className="border border-border dark:border-dark-border rounded-lg p-3.5 mb-2 bg-surface dark:bg-dark-surface text-text dark:text-dark-text placeholder:text-text-secondary"
+            placeholder="Reason for consultation"
+            multiline
+            value={field.value}
+            onBlur={field.onBlur}
+            onChangeText={field.onChange}
+            placeholderTextColor={theme.colors.textMuted}
+            // Not chained: multiline. Its return key must insert a newline.
+          />
+        )}
+      />
 
       <TouchableOpacity
         className="mt-5 p-4 rounded-lg items-center bg-text dark:bg-dark-text disabled:opacity-50"

@@ -9,6 +9,19 @@ export const acceptInviteSchema = z
     token: z.string().trim().min(1, "Paste the code from your invitation email"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
+
+    // Registration details collected at onboarding. All optional: a client
+    // may not know their code yet, may not wish to say why they are here,
+    // and a birthdate is not needed to activate an account.
+    date_of_birth: z
+      .string()
+      .trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a date as YYYY-MM-DD")
+      .optional(),
+
+    client_code: z.string().trim().optional(),
+
+    reason_for_consultation: z.string().trim().optional(),
   })
   .refine((values) => values.password === values.confirmPassword, {
     message: "Passwords do not match",

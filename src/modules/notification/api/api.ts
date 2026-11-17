@@ -1,6 +1,6 @@
 import { api } from "@/core/api/client";
 
-import { NotificationListResponse, UnreadSummary } from "./types";
+import { AppNotification, NotificationListResponse, UnreadSummary } from "./types";
 
 /**
  * The general notification list: everything that is not conversation traffic.
@@ -41,6 +41,20 @@ export async function markWorkspaceKindRead(
 
 export async function markNotificationRead(id: string) {
   await api.patch(`/notifications/${id}/read`);
+}
+
+/**
+ * Flip one notification between read and unread.
+ *
+ * The server returns the notification as it now stands, so the caller can put
+ * that straight into the cache instead of guessing at the new state.
+ */
+export async function toggleNotificationRead(id: string) {
+  const { data } = await api.patch<AppNotification>(
+    `/notifications/${id}/toggle`,
+  );
+
+  return data;
 }
 
 /**

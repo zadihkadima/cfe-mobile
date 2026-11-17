@@ -90,6 +90,50 @@ export function ClientProfile({
           ).toLocaleDateString()}
         </Text>
       </View>
+
+      {/*
+        Registration details the client feedback asked to appear on the record:
+        birthdate, the firm-assigned code, and why the client came. Each is
+        omitted rather than rendered as an empty value, so a field the client
+        never filled does not read as a missing record.
+      */}
+      {client.date_of_birth ? (
+        <View className="flex-row justify-between py-2">
+          <Text className="font-semibold text-text dark:text-dark-text">
+            Date of birth
+          </Text>
+
+          <Text className="text-text dark:text-dark-text">
+            {new Date(
+              `${client.date_of_birth}T00:00:00`
+            ).toLocaleDateString()}
+          </Text>
+        </View>
+      ) : null}
+
+      {client.client_code ? (
+        <View className="flex-row justify-between py-2">
+          <Text className="font-semibold text-text dark:text-dark-text">
+            Client code
+          </Text>
+
+          <Text className="text-text dark:text-dark-text">
+            {client.client_code}
+          </Text>
+        </View>
+      ) : null}
+
+      {client.reason_for_consultation ? (
+        <View className="py-2">
+          <Text className="font-semibold text-text dark:text-dark-text">
+            Reason for consultation
+          </Text>
+
+          <Text className="mt-1 text-text dark:text-dark-text">
+            {client.reason_for_consultation}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }

@@ -62,13 +62,27 @@ export const resetPasswordRequest = async (
   return res.data;
 };
 
+/**
+ * Activates an invited account.
+ *
+ * The registration details are optional: a client may not know their code yet,
+ * may not wish to say why they are consulting, and a birthdate is not needed
+ * to activate an account. Each is sent only when filled, so an omitted field
+ * reads as "not supplied" rather than "cleared".
+ */
 export const acceptInviteRequest = async (
   token: string,
   password: string,
+  registration?: {
+    date_of_birth?: string;
+    client_code?: string;
+    reason_for_consultation?: string;
+  },
 ) => {
   const res = await authApi.post("/auth/accept-invite", {
     token,
     password,
+    ...registration,
   });
   return res.data;
 };

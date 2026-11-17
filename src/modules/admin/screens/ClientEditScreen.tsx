@@ -64,6 +64,14 @@ export function ClientEditScreen() {
           first_name: client.data.first_name,
           last_name: client.data.last_name,
           email: client.data.email,
+
+          // `?? ""` rather than passing the possibly-undefined value straight
+          // through: the form's inputs are controlled, and a controlled input
+          // must never see `undefined` -- it would flip to uncontrolled.
+          date_of_birth: client.data.date_of_birth ?? "",
+          client_code: client.data.client_code ?? "",
+          reason_for_consultation:
+            client.data.reason_for_consultation ?? "",
         }}
 
         loading={update.isPending}

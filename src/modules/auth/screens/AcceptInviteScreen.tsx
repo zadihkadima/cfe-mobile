@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { useTheme } from "@/design-system/theme/useTheme";
+import { DateField } from "@/design-system/ui/input/DateField";
 
 import { acceptInviteRequest } from "@/core/api/auth";
 import { AuthFormLayout } from "../components/AuthFormLayout";
@@ -44,12 +45,27 @@ export function AcceptInviteScreen() {
       token: tokenFromLink ?? "",
       password: "",
       confirmPassword: "",
+
+      // Optional registration details. Left blank, the account is activated
+      // without them; they can be filled in later from the profile edit screen.
+      date_of_birth: "",
+      client_code: "",
+      reason_for_consultation: "",
     },
   });
 
   const mutation = useMutation({
     mutationFn: (data: AcceptInviteFormData) =>
-      acceptInviteRequest(data.token.trim(), data.password),
+      acceptInviteRequest(
+        data.token.trim(),
+        data.password,
+        {
+          date_of_birth: data.date_of_birth || undefined,
+          client_code: data.client_code || undefined,
+          reason_for_consultation:
+            data.reason_for_consultation || undefined,
+        },
+      ),
 
     onSuccess: () => {
       // Replace rather than push: the invitation is spent, and going back to
@@ -58,8 +74,16 @@ export function AcceptInviteScreen() {
     },
   });
 
+  // `reason_for_consultation` is absent: it is multiline, and a multiline
+  // field must not be chained -- its return key inserts a newline.
   const chain = useFieldChain(
-    ["token", "password", "confirmPassword"],
+    [
+      "token",
+      "password",
+      "confirmPassword",
+      "date_of_birth",
+      "client_code",
+    ],
     {
       onSubmit: () =>
         void handleSubmit((data) =>
@@ -138,6 +162,52 @@ export function AcceptInviteScreen() {
                 {...chain.field(
                   "confirmPassword"
                 )}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="date_of_birth"
+            render={({ field }) => (
+              <DateField
+                label="Date of birth"
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                error={errors.date_of_birth?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="client_code"
+            render={({ field }) => (
+              <FormInput
+                label="Client code"
+                placeholder="From your invitation email"
+                autoCapitalize="characters"
+                value={field.value}
+                onBlur={field.onBlur}
+                onChangeText={field.onChange}
+                error={errors.client_code?.message}
+                {...chain.field("client_code")}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="reason_for_consultation"
+            render={({ field }) => (
+              <FormInput
+                label="Reason for consultation"
+                placeholder="Optional"
+                multiline
+                value={field.value}
+                onBlur={field.onBlur}
+                onChangeText={field.onChange}
+                error={errors.reason_for_consultation?.message}
               />
             )}
           />

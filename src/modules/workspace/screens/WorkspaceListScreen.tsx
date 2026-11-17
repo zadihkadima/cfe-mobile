@@ -8,6 +8,7 @@ import { WorkspaceCard } from "../components/WorkspaceCard";
 import { StatusFilter, WorkspaceStatusTabs } from "../components/WorkspaceStatusTabs";
 import { WORKSPACE_STATUS_LABELS } from "../lib/status";
 import { RootState } from "@/core/store";
+import { can } from "@/core/auth/permissions";
 import { PaginatedListScreen } from "@/core/components/PaginatedListScreen";
 import { useUnread } from "@/modules/notification/hooks/useUnread";
 import { usePinnedWorkspaces, useTogglePin } from "../api/pins";
@@ -25,7 +26,10 @@ export function WorkspaceListScreen() {
   const user = useSelector((state: RootState) => state.auth.user);
   const role = user?.role ?? "client";
 
-  const canCreate = role === "admin";
+  // Administrators and managers may start workspaces; clients may not. The
+  // permission table is the single source, so a role gaining or losing the
+  // ability changes here and in every other gate at once.
+  const canCreate = can(role, "workspaces.create");
 
   const { pinnedIds } = usePinnedWorkspaces();
   const togglePin = useTogglePin();
@@ -99,7 +103,15 @@ export function WorkspaceListScreen() {
       createLabel={canCreate ? "Create workspace" : undefined}
       onCreate={
         canCreate
-          ? () => router.push("/user/admin/workspaces/create")
+          ? () =>
+              router.push(
+                // An administrator creates from the admin tree, a manager from
+                // their own -- the same screen either way, reached by the route
+                // the caller is authorized for.
+                role === "admin"
+                  ? "/user/admin/workspaces/create"
+                  : "/user/workspaces/create"
+              )
           : undefined
       }
     />

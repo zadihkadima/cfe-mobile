@@ -92,17 +92,44 @@ describe("createClientSchema", () => {
     }
   });
 
-  it("exposes exactly the three fields the create endpoint accepts", () => {
+  it("exposes exactly the fields the create endpoint accepts", () => {
+    // Asserted on the schema shape rather than on a parse of a minimal input,
+    // because zod omits optional keys the input did not carry: parsing
+    // `{first_name, last_name, email}` yields exactly those three keys even
+    // though the schema accepts six, and the omission would hide drift.
+    expect(Object.keys(createClientSchema.shape).sort()).toEqual([
+      "client_code",
+      "date_of_birth",
+      "email",
+      "first_name",
+      "last_name",
+      "reason_for_consultation",
+    ]);
+  });
+
+  it("carries the optional registration fields through when supplied", () => {
     const parsed: CreateClientFormData = createClientSchema.parse({
       first_name: "Ada",
       last_name: "Lovelace",
       email: "ada@example.com",
+      date_of_birth: "1815-12-10",
+      client_code: "CFE-0001",
+      reason_for_consultation: "Tax filing question",
     });
 
-    expect(Object.keys(parsed).sort()).toEqual([
-      "email",
-      "first_name",
-      "last_name",
-    ]);
+    expect(parsed.date_of_birth).toBe("1815-12-10");
+    expect(parsed.client_code).toBe("CFE-0001");
+    expect(parsed.reason_for_consultation).toBe("Tax filing question");
+  });
+
+  it("rejects a date_of_birth that is not YYYY-MM-DD", () => {
+    const result = createClientSchema.safeParse({
+      first_name: "Ada",
+      last_name: "Lovelace",
+      email: "ada@example.com",
+      date_of_birth: "10/12/1815",
+    });
+
+    expect(result.success).toBe(false);
   });
 });

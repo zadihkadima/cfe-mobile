@@ -1,14 +1,26 @@
 import React from "react";
 
 import { useRouter } from "expo-router";
+import { useSelector } from "react-redux";
 
 import { useManagers } from "@/modules/admin/hooks/manager/useManagers";
 import { PersonRow } from "@/modules/admin/components/PersonRow";
 import { PaginatedListScreen } from "@/core/components/PaginatedListScreen";
 import { Manager } from "@/modules/admin/api/manager/types";
+import { can } from "@/core/auth/permissions";
+import { RootState } from "@/core/store";
 
 export function ManagerListScreen() {
   const router = useRouter();
+
+  // Only administrators may create managers. The route guard on the layout
+  // already keeps this screen administrator-only; this keeps the button honest
+  // even if a future route change opens the list to a wider audience.
+  const role = useSelector(
+    (state: RootState) => state.auth.user?.role
+  );
+  const canCreate =
+    role != null && can(role, "managers.create");
 
   return (
     <PaginatedListScreen<Manager>
@@ -31,8 +43,12 @@ export function ManagerListScreen() {
       )}
       emptyTitle="No managers yet"
       emptyDescription="Add a manager so they can be assigned to client workspaces."
-      createLabel="Add manager"
-      onCreate={() => router.push("/user/admin/managers/create")}
+      createLabel={canCreate ? "Add manager" : undefined}
+      onCreate={
+        canCreate
+          ? () => router.push("/user/admin/managers/create")
+          : undefined
+      }
     />
   );
 }

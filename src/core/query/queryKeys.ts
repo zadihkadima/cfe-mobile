@@ -69,6 +69,21 @@ export const queryKeys = {
       ["clients", id] as const,
   },
 
+  // The manager's client list is a different endpoint with a different scope
+  // (only the caller's assigned clients), so it gets its own keys rather than
+  // sharing the admin directory's. Sharing them would let a manager's page
+  // render from the admin cache, or an admin's list vanish when a manager
+  // fetched their own.
+  managerClients: {
+    all: ["manager-clients"] as const,
+
+    list: (params?: unknown) =>
+      ["manager-clients", params] as const,
+
+    detail: (id: string) =>
+      ["manager-clients", id] as const,
+  },
+
   workspaces: {
     all: ["workspaces"] as const,
 

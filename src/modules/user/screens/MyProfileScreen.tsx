@@ -88,6 +88,31 @@ export function MyProfileScreen() {
             />
           </View>
 
+          {data.date_of_birth ? (
+            <View>
+              <Text className="text-xs text-text-secondary dark:text-dark-text-secondary">Date of birth</Text>
+              <Text className="text-text dark:text-dark-text font-semibold">
+                {new Date(
+                  `${data.date_of_birth}T00:00:00`
+                ).toLocaleDateString()}
+              </Text>
+            </View>
+          ) : null}
+
+          {data.client_code ? (
+            <View>
+              <Text className="text-xs text-text-secondary dark:text-dark-text-secondary">Client code</Text>
+              <Text className="text-text dark:text-dark-text font-semibold">{data.client_code}</Text>
+            </View>
+          ) : null}
+
+          {data.reason_for_consultation ? (
+            <View>
+              <Text className="text-xs text-text-secondary dark:text-dark-text-secondary">Reason for consultation</Text>
+              <Text className="text-text dark:text-dark-text font-semibold">{data.reason_for_consultation}</Text>
+            </View>
+          ) : null}
+
           <View>
             <Text className="text-xs text-text-secondary dark:text-dark-text-secondary">Updated</Text>
             <Text className="text-text dark:text-dark-text font-semibold">

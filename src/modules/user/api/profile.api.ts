@@ -10,6 +10,19 @@ export type MyProfile = {
   social_security_number?: string;
 
   /**
+   * Birthdate as `YYYY-MM-DD`, absent until supplied. Shared by every role --
+   * the feedback asked for it in registration, the client profile, and the
+   * client detail views, so it lives on the account itself.
+   */
+  date_of_birth?: string | null;
+
+  /** Firm-assigned identifier, present once the account is provisioned. */
+  client_code?: string | null;
+
+  /** Free-text reason for consulting. Optional by design. */
+  reason_for_consultation?: string | null;
+
+  /**
    * Set when `social_security_number` carries only the last four digits. Lets
    * the UI tell "masked" from "no SSN on file", which an empty string alone
    * cannot.
@@ -40,6 +53,10 @@ export type UpdateMyProfileRequest = {
   email?: string;
   tax_id?: string;
   social_security_number?: string;
+
+  date_of_birth?: string;
+  client_code?: string;
+  reason_for_consultation?: string;
 };
 
 export const getMyProfile = async (): Promise<MyProfile> => {

@@ -12,6 +12,7 @@ import { normalizeApiError } from "@/core/errors/normalizeApiError";
 import { QueryState } from "@/core/components/QueryState";
 import { SharedLayout } from "@/design-system/ui/layout/SharedLayout";
 import { Avatar, Button, Field, Text } from "@/design-system/ui";
+import { DateField } from "@/design-system/ui/input/DateField";
 import { showError, showSuccess } from "@/core/store/notificationSlice";
 import { useFieldChain } from "@/shared/hooks/useFieldChain";
 
@@ -21,6 +22,10 @@ type FormData = {
   email: string;
   tax_id: string;
   social_security_number: string;
+
+  date_of_birth: string;
+  client_code: string;
+  reason_for_consultation: string;
 };
 
 const breadcrumbs = [
@@ -46,22 +51,48 @@ export function EditMyProfileScreen() {
       email: data?.email ?? "",
       tax_id: data?.tax_id ?? "",
       social_security_number: data?.social_security_number ?? "",
+
+      date_of_birth: data?.date_of_birth ?? "",
+      client_code: data?.client_code ?? "",
+      reason_for_consultation:
+        data?.reason_for_consultation ?? "",
     },
   });
 
   const save = () =>
     void handleSubmit((form) =>
-      update.mutate(form, {
-        onSuccess: () => {
-          dispatch(showSuccess("Profile updated."));
-          router.replace("/user/profile");
+      // Blank optional fields are dropped rather than sent as empty strings:
+      // an empty date is not a date, and an empty reason is no reason. Omitting
+      // them leaves the stored value untouched, which is what clearing a field
+      // the user never filled should do.
+      update.mutate(
+        {
+          first_name: form.first_name,
+          last_name: form.last_name,
+          email: form.email,
+          tax_id: form.tax_id || undefined,
+          social_security_number:
+            form.social_security_number || undefined,
+
+          date_of_birth: form.date_of_birth || undefined,
+          client_code: form.client_code || undefined,
+          reason_for_consultation:
+            form.reason_for_consultation || undefined,
         },
-        onError: (err) => {
-          dispatch(showError(normalizeApiError(err).message));
+        {
+          onSuccess: () => {
+            dispatch(showSuccess("Profile updated."));
+            router.replace("/user/profile");
+          },
+          onError: (err) => {
+            dispatch(showError(normalizeApiError(err).message));
+          },
         },
-      }),
+      ),
     )();
 
+  // `reason_for_consultation` is absent: it is multiline, and a multiline
+  // field must not be chained -- its return key inserts a newline.
   const chain = useFieldChain(
     [
       "first_name",
@@ -69,6 +100,8 @@ export function EditMyProfileScreen() {
       "email",
       "tax_id",
       "social_security_number",
+      "date_of_birth",
+      "client_code",
     ],
     { onSubmit: save },
   );
@@ -229,6 +262,52 @@ export function EditMyProfileScreen() {
               {...chain.field(
                 "social_security_number",
               )}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="date_of_birth"
+          render={({ field }) => (
+            // A picker rather than a text input: a typed date is wrong in
+            // three ways that a picker removes outright -- the format is
+            // guessed, impossible dates can be entered, and nothing stops a
+            // malformed value until the server rejects the whole save.
+            <DateField
+              label="Date of birth"
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="client_code"
+          render={({ field }) => (
+            <Field
+              label="Client code"
+              autoCapitalize="characters"
+              value={field.value}
+              onBlur={field.onBlur}
+              onChangeText={field.onChange}
+              {...chain.field("client_code")}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="reason_for_consultation"
+          render={({ field }) => (
+            <Field
+              label="Reason for consultation"
+              hint="Optional. Why you are consulting the firm."
+              multiline
+              value={field.value}
+              onBlur={field.onBlur}
+              onChangeText={field.onChange}
             />
           )}
         />

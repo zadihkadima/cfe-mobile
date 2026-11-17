@@ -1,14 +1,26 @@
 import React from "react";
 
 import { useRouter } from "expo-router";
+import { useSelector } from "react-redux";
 
 import { useClients } from "@/modules/admin/hooks/client/useClients";
 import { PersonRow } from "@/modules/admin/components/PersonRow";
 import { PaginatedListScreen } from "@/core/components/PaginatedListScreen";
 import { Client } from "@/modules/admin/api/client/types";
+import { can } from "@/core/auth/permissions";
+import { RootState } from "@/core/store";
 
 export function ClientListScreen() {
   const router = useRouter();
+
+  // The create control is shown only where the caller may use it. The route
+  // guard above already keeps this screen administrator-only, so this reads as
+  // defense in depth rather than as the enforcement itself.
+  const role = useSelector(
+    (state: RootState) => state.auth.user?.role
+  );
+  const canCreate =
+    role != null && can(role, "clients.create");
 
   return (
     <PaginatedListScreen<Client>
@@ -26,8 +38,12 @@ export function ClientListScreen() {
       )}
       emptyTitle="No clients yet"
       emptyDescription="Invite a client to give them access to their workspace."
-      createLabel="Add client"
-      onCreate={() => router.push("/user/admin/clients/create")}
+      createLabel={canCreate ? "Add client" : undefined}
+      onCreate={
+        canCreate
+          ? () => router.push("/user/admin/clients/create")
+          : undefined
+      }
     />
   );
 }
