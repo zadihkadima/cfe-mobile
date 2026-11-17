@@ -8,6 +8,14 @@ export type MyProfile = {
   role: "admin" | "manager" | "client";
   tax_id?: string;
   social_security_number?: string;
+
+  /**
+   * Set when `social_security_number` carries only the last four digits. Lets
+   * the UI tell "masked" from "no SSN on file", which an empty string alone
+   * cannot.
+   */
+  ssn_masked?: boolean;
+
   two_factor_enabled?: boolean;
 
   /**

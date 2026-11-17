@@ -95,6 +95,14 @@ export type WorkspaceClientDetails = {
   role: "client";
   tax_id?: string;
   social_security_number?: string;
+
+  /**
+   * Set when `social_security_number` carries only the last four digits.
+   * Lets the UI tell "masked" from "no SSN on file", which an empty string
+   * alone cannot.
+   */
+  ssn_masked?: boolean;
+
   is_active: boolean;
   invited: boolean;
   created_at: string;

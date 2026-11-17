@@ -1,8 +1,12 @@
 import { View } from "react-native";
 
+import { useSelector } from "react-redux";
+import type { RootState } from "@/core/store";
+
 import { QueryState } from "@/core/components/QueryState";
 import { ScreenScrollView } from "@/design-system/ui/layout/ScreenScrollView";
 import { Section } from "@/design-system/ui/layout/Section";
+import { Text } from "@/design-system/ui/typography/Text";
 
 import { ActivityFeed } from "../components/ActivityFeed";
 import { OutstandingWorkList } from "../components/OutstandingWorkList";
@@ -26,6 +30,15 @@ export function DashboardScreen() {
     refetch,
   } = useDashboard();
 
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  // The greeting names the person, not the role. It used to read "Good morning,
+  // client" because that was all it was given, which is a label rather than a
+  // greeting -- and it is the name the header beside the avatar already shows,
+  // so the two now read the same record.
+  const firstName = user?.first_name?.trim();
+  const greeting = firstName ? `Hello, ${firstName}` : "Hello";
+
   // Not folded into the loading gate below. This one request spans four
   // modules and every workspace, so it is the slowest thing on the screen;
   // blocking the whole dashboard on it would make the rest arrive late for the
@@ -47,6 +60,13 @@ export function DashboardScreen() {
 
   return (
     <ScreenScrollView>
+      <View className="mb-6">
+        <Text variant="heading">{greeting}</Text>
+        <Text variant="body" tone="secondary" className="mt-1">
+          Here's what needs your attention today.
+        </Text>
+      </View>
+
       {/* Outstanding work leads, above workspaces.
 
           Everything else on this screen answers "what exists"; this answers
@@ -71,11 +91,7 @@ export function DashboardScreen() {
           Recent Workspaces -- which put the least actionable block at the top
           and the one thing people open this app to reach at the bottom, below
           three screenfuls of scrolling. A workspace is where the work is; the
-          counts are context you glance at once. So they have traded places.
-
-          (The greeting block that used to sit above all of this was removed
-          earlier. It filled the first screenful with "Good morning, client" --
-          the role, not the name, because that is what it was given.) */}
+          counts are context you glance at once. So they have traded places. */}
       <Section title="Recent Workspaces" description="Recently updated workspaces.">
         <WorkspaceList workspaces={recentWorkspaces} role={role} />
       </Section>

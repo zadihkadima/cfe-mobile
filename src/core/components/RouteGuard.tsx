@@ -8,7 +8,13 @@ type Props = PropsWithChildren & {
 };
 
 export function RouteGuard({ children, allowedRoles }: Props) {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, hydrated } = useSelector((state: RootState) => state.auth);
+
+  // Nothing is decided until the stored session has been read back. A guard
+  // that read only `user` would see it empty on a cold start -- the keychain
+  // read is not instant -- and would send a signed-in person to the login
+  // screen before the restored session could prove otherwise.
+  if (!hydrated) return null;
 
   if (!user) {
     return <Redirect href="/auth/login" />;

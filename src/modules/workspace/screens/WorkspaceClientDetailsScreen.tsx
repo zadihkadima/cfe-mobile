@@ -2,12 +2,18 @@ import { Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
 import { useWorkspaceClientDetails } from "@/modules/workspace/hooks/useWorkspaceClientDetails";
+import { revealWorkspaceClientSsn } from "@/modules/workspace/api/ssn.api";
 import { QueryState } from "@/core/components/QueryState";
-import { MaskedValue } from "@/design-system/ui/display/MaskedValue";
+import { RevealSsn } from "@/shared/components/RevealSsn";
 import { ScreenScrollView } from "@/design-system/ui/layout/ScreenScrollView";
 
 export function WorkspaceClientDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  // The workspace the client belongs to, which the reveal endpoint is keyed
+  // by. The same param that fetched the masked details authorizes the request
+  // that would unmask them, so the two can never drift apart.
+  const workspaceId = id;
 
   const { data, isLoading, isError, error, refetch } = useWorkspaceClientDetails(id);
 
@@ -51,7 +57,12 @@ export function WorkspaceClientDetailsScreen() {
 
           <View>
             <Text className="text-xs text-text-secondary dark:text-dark-text-secondary">Social Security Number</Text>
-            <MaskedValue value={data.social_security_number} />
+            <RevealSsn
+              value={data.social_security_number}
+              reveal={(password) =>
+                revealWorkspaceClientSsn(workspaceId, password)
+              }
+            />
           </View>
 
           <View>

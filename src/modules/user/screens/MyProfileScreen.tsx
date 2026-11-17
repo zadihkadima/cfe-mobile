@@ -2,9 +2,10 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 import { useMyProfile } from "@/modules/user/hooks/useMyProfile";
+import { revealMySsn } from "@/modules/user/api/ssn.api";
 import { SharedLayout } from "@/design-system/ui/layout/SharedLayout";
 import { QueryState } from "@/core/components/QueryState";
-import { MaskedValue } from "@/design-system/ui/display/MaskedValue";
+import { RevealSsn } from "@/shared/components/RevealSsn";
 import { Avatar, CopyableId } from "@/design-system/ui";
 
 export function MyProfileScreen() {
@@ -81,7 +82,10 @@ export function MyProfileScreen() {
 
           <View>
             <Text className="text-xs text-text-secondary dark:text-dark-text-secondary">Social Security Number</Text>
-            <MaskedValue value={data.social_security_number} />
+            <RevealSsn
+              value={data.social_security_number}
+              reveal={revealMySsn}
+            />
           </View>
 
           <View>
