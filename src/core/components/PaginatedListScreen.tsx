@@ -47,6 +47,14 @@ interface Props<T> {
 
   searchPlaceholder: string;
 
+  /**
+   * Narrows the page's items in addition to the server-side search.
+   *
+   * Used where the server's search term does not cover every field the caller
+   * wants searchable, so the client guarantees the match itself.
+   */
+  filterItems?(items: T[], search: string): T[];
+
   /** Shown when the list is genuinely empty, not when a search found nothing. */
   emptyTitle: string;
   emptyDescription?: string;
@@ -105,6 +113,8 @@ export function PaginatedListScreen<T>({
 
   searchPlaceholder,
 
+  filterItems,
+
   emptyTitle,
 
   emptyDescription,
@@ -157,7 +167,9 @@ export function PaginatedListScreen<T>({
     page: lastScope === scope ? page : 1,
   });
 
-  const items = data?.items ?? [];
+  const items = filterItems
+    ? filterItems(data?.items ?? [], debouncedSearch)
+    : data?.items ?? [];
   const totalPages = data?.total_pages ?? 1;
   const isSearching = debouncedSearch.trim().length > 0;
 

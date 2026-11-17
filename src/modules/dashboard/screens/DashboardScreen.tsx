@@ -32,12 +32,16 @@ export function DashboardScreen() {
 
   const user = useSelector((state: RootState) => state.auth.user);
 
-  // The greeting names the person, not the role. It used to read "Good morning,
-  // client" because that was all it was given, which is a label rather than a
-  // greeting -- and it is the name the header beside the avatar already shows,
-  // so the two now read the same record.
-  const firstName = user?.first_name?.trim();
-  const greeting = firstName ? `Hello, ${firstName}` : "Hello";
+  // The greeting names the person, not the role, and by the whole name rather
+  // than only the first part of it. It used to read "Good morning, client"
+  // because that was all it was given, which is a label rather than a greeting,
+  // and it used to stop at the first name while the header beside the avatar
+  // showed both halves. The store carries the full record, so the greeting now
+  // reads it end to end.
+  const fullName = [user?.first_name?.trim(), user?.last_name?.trim()]
+    .filter(Boolean)
+    .join(" ");
+  const greeting = fullName ? `Hello, ${fullName}` : "Hello";
 
   // Not folded into the loading gate below. This one request spans four
   // modules and every workspace, so it is the slowest thing on the screen;

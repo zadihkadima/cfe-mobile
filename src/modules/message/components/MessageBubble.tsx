@@ -56,8 +56,6 @@ type Props = {
   onRetry?(message: ConversationMessage): void;
 
   onEdit?(message: ConversationMessage): void;
-
-  onOpenAttachment?(attachment: Attachment): void;
 };
 
 export function MessageBubble({
@@ -70,13 +68,13 @@ export function MessageBubble({
   onOpenParent,
   onRetry,
   onEdit,
-  onOpenAttachment,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   // Images are shown, everything else is listed. A photograph reduced to a
   // filename is a photograph nobody opens, and the reason for sending one is
-  // that the recipient sees it without having to decide to.
+  // that the recipient sees it without having to decide to. Neither may be
+  // tapped into a download: an attachment opens nothing now.
   const isImage = !!message.attachment?.mime_type?.startsWith("image/");
 
   const isSending = message.delivery === "sending";
@@ -223,13 +221,11 @@ export function MessageBubble({
               workspaceId={workspaceId}
               attachment={message.attachment}
               isOwn={isOwn}
-              onOpen={onOpenAttachment}
             />
           ) : (
             <MessageAttachment
               attachment={message.attachment}
               isOwn={isOwn}
-              onOpen={onOpenAttachment}
             />
           )
         ) : null}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Image, Text, View } from "react-native";
 
 import { useFileAccessUrl } from "@/core/api/useFileAccessUrl";
 
@@ -12,8 +12,6 @@ type Props = {
   attachment: Attachment;
 
   isOwn: boolean;
-
-  onOpen?(attachment: Attachment): void;
 };
 
 /**
@@ -21,7 +19,9 @@ type Props = {
  *
  * A photograph listed as a filename is a photograph nobody looks at. The
  * whole reason to send one is that the recipient sees it without deciding to,
- * so it is drawn in the bubble and tapping it opens the full-size file.
+ * so it is drawn in the bubble. It used to open the full-size file on tap,
+ * which downloaded it; taps no longer do anything, because the reader is not
+ * to take the file away with them.
  *
  * The URL behind it expires, so it is held by a hook that renews it rather
  * than fetched once when this mounts. Fetching once works until the URL
@@ -33,7 +33,6 @@ export function MessageImageAttachment({
   workspaceId,
   attachment,
   isOwn,
-  onOpen,
 }: Props) {
   const { data, isPending, isError } = useFileAccessUrl(
     workspaceId,
@@ -47,10 +46,9 @@ export function MessageImageAttachment({
   const unavailable = isError || failed;
 
   return (
-    <Pressable
-      onPress={() => onOpen?.(attachment)}
-      accessibilityRole="imagebutton"
-      accessibilityLabel={`Image, ${attachment.name}. Double tap to open.`}
+    <View
+      accessibilityRole="image"
+      accessibilityLabel={`Image, ${attachment.name}.`}
       className="mt-1.5 overflow-hidden rounded-xl"
     >
       <View
@@ -84,6 +82,6 @@ export function MessageImageAttachment({
           </Text>
         )}
       </View>
-    </Pressable>
+    </View>
   );
 }

@@ -7,6 +7,7 @@ import { useClients } from "@/modules/admin/hooks/client/useClients";
 import { PersonRow } from "@/modules/admin/components/PersonRow";
 import { PaginatedListScreen } from "@/core/components/PaginatedListScreen";
 import { Client } from "@/modules/admin/api/client/types";
+import { filterClientsBySearch } from "@/modules/admin/api/client/filterClients";
 import { can } from "@/core/auth/permissions";
 import { RootState } from "@/core/store";
 
@@ -26,6 +27,7 @@ export function ClientListScreen() {
     <PaginatedListScreen<Client>
       title="Clients"
       searchPlaceholder="Search clients"
+      filterItems={filterClientsBySearch}
       useData={({ search, page }) =>
         useClients({ page, limit: 20, search })
       }

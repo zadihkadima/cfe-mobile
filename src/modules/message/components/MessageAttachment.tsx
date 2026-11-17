@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { formatFileSize } from "@/core/format/formatFileSize";
 
@@ -8,8 +8,6 @@ type Props = {
   attachment: Attachment;
 
   isOwn: boolean;
-
-  onOpen?(attachment: Attachment): void;
 };
 
 /**
@@ -19,17 +17,19 @@ type Props = {
  * things that decide whether the reader opens it now or later. The storage key
  * and mime type are deliberately not shown: neither means anything to the
  * person reading, and the storage key is an internal path.
+ *
+ * The row used to open the file on tap, which downloaded it. Taps no longer do
+ * anything, because the reader is not to take the file away with them.
  */
-export function MessageAttachment({ attachment, isOwn, onOpen }: Props) {
+export function MessageAttachment({ attachment, isOwn }: Props) {
   const size = formatFileSize(attachment.size_bytes);
 
   return (
-    <Pressable
-      onPress={() => onOpen?.(attachment)}
-      accessibilityRole="button"
+    <View
+      accessibilityRole="text"
       accessibilityLabel={`Attachment, ${attachment.name}${
         size ? `, ${size}` : ""
-      }. Double tap to open.`}
+      }.`}
       className={`mt-1.5 flex-row items-center rounded-xl border px-3 py-2 ${
         isOwn
           ? "border-background/30 dark:border-dark-background/30"
@@ -83,6 +83,6 @@ export function MessageAttachment({ attachment, isOwn, onOpen }: Props) {
           </Text>
         ) : null}
       </View>
-    </Pressable>
+    </View>
   );
 }

@@ -17,8 +17,6 @@ import { MessageBubble } from "./MessageBubble";
 
 import { ConversationMessage } from "../api/conversation";
 
-import { MessageAttachment } from "../api/types";
-
 type Props = {
   messages: ConversationMessage[];
 
@@ -65,7 +63,6 @@ type Props = {
 
   onEdit?(message: ConversationMessage): void;
 
-  onOpenAttachment?(attachment: MessageAttachment): void;
 };
 
 export function MessageList({
@@ -84,7 +81,6 @@ export function MessageList({
   onReply,
   onRetry,
   onEdit,
-  onOpenAttachment,
 }: Props) {
   const listRef = useRef<FlatList<ConversationMessage>>(null);
 
@@ -283,7 +279,6 @@ export function MessageList({
           onOpenParent={openParent}
           onRetry={onRetry}
           onEdit={onEdit}
-          onOpenAttachment={onOpenAttachment}
         />
       </View>
     ),
@@ -293,7 +288,6 @@ export function MessageList({
       onReply,
       onRetry,
       onEdit,
-      onOpenAttachment,
       startsNewDay,
       startsSenderRun,
       openParent,
@@ -337,7 +331,9 @@ export function MessageList({
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
+        // Interactive rather than "on-drag": scrolling to read older messages
+        // while composing must not take the keyboard with it.
+        keyboardDismissMode="none"
         // Bubbles are of wildly different heights, so the list cannot know the
         // offset of a message it has not rendered. Without this a jump to an
         // unmeasured parent throws instead of scrolling. Scrolling by an

@@ -3,10 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import * as DocumentPicker from "expo-document-picker";
 
-import {
-  getWorkspaceFileAccessUrl,
-  uploadWorkspaceFile,
-} from "@/core/api/uploadWorkspaceFile";
+import { uploadWorkspaceFile } from "@/core/api/uploadWorkspaceFile";
 
 import {
   useMemo,
@@ -37,11 +34,11 @@ import { useUpdateMessage } from "../hooks/useUpdateMessage";
 import { ConnectionBanner } from "../components/ConnectionBanner";
 import { useKeyboardVisible } from "@/core/hooks/useKeyboardVisible";
 import { useTransferProgress } from "@/core/api/useTransferProgress";
-import { downloadAndOpenFile } from "@/core/api/downloadWorkspaceFile";
 import { TransferProgressBar } from "@/design-system/ui/feedback/TransferProgressBar";
 import { KeyboardAvoidingContainer } from "@/design-system/ui/layout/KeyboardAvoidingContainer";
 
 import { useConnectionStatus } from "@/core/websocket/useConnectionStatus";
+
 
 import {
   websocketClient,
@@ -345,24 +342,6 @@ const messages =
     };
   }
 
-  async function openAttachment(attachment: MessageAttachment) {
-    try {
-      // Fetched now rather than held from when the message was drawn. Access
-      // URLs last ten minutes, so one captured when the conversation opened is
-      // already dead by the time somebody scrolls back and taps it. Asking
-      // again costs a request and always yields a URL that works.
-      const url = await getWorkspaceFileAccessUrl(workspaceId, attachment.id);
-
-      await track(
-        attachment.name,
-        (onProgress) => downloadAndOpenFile(url, attachment.name, onProgress),
-        "Downloading",
-      );
-    } catch {
-      // A file that cannot be opened is not a reason to tear down the
-      // conversation around it.
-    }
-  }
 
 
 
@@ -458,10 +437,6 @@ const messages =
             // send the correction as though it were a new reply.
             setReplyToId(undefined);
             setEditing({ id: message.id, content: message.content });
-          }}
-
-          onOpenAttachment={(attachment) => {
-            void openAttachment(attachment);
           }}
 
         />

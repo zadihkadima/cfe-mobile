@@ -6,6 +6,7 @@ import { useManagerClients } from "@/modules/manager/hooks/client/useManagerClie
 import { PersonRow } from "@/modules/admin/components/PersonRow";
 import { PaginatedListScreen } from "@/core/components/PaginatedListScreen";
 import { ManagerClient } from "@/modules/manager/api/client/types";
+import { filterClientsBySearch } from "@/modules/admin/api/client/filterClients";
 
 export function ManagerClientListScreen() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export function ManagerClientListScreen() {
     <PaginatedListScreen<ManagerClient>
       title="Clients"
       searchPlaceholder="Search clients"
+      filterItems={filterClientsBySearch}
       useData={({ search, page }) =>
         useManagerClients({ page, limit: 20, search })
       }

@@ -268,6 +268,11 @@ export function MessageInput({
           multiline
           returnKeyType="send"
           submitBehavior="submit"
+          // Sending must not dismiss the keyboard: a conversation is a run of
+          // messages, and re-opening the keyboard after every send is what
+          // makes the composer feel broken. The keyboard stays up until the
+          // reader dismisses it or moves focus themselves.
+          blurOnSubmit={false}
           onSubmitEditing={submit}
           className="min-h-11 max-h-[120px] flex-1 rounded-[22px] border border-border bg-background px-4 py-2.5 text-text dark:border-dark-border dark:bg-dark-background dark:text-dark-text"
         />
