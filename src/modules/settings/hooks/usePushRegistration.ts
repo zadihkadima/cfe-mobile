@@ -56,6 +56,8 @@ async function resolveToken(): Promise<string | null> {
   // both futile -- the OS will not show the prompt twice -- and the reason
   // people uninstall.
   if (!granted && existing.canAskAgain) {
+    // For Android 13+ (API level 33+), we need to request POST_NOTIFICATIONS permission
+    // for messages specifically to match backend channelId "messages"
     const requested = await Notifications.requestPermissionsAsync();
     granted = requested.granted;
   }
@@ -82,6 +84,18 @@ async function resolveToken(): Promise<string | null> {
    * log says it worked.
    */
   if (Platform.OS === "android") {
+    // Create a high-importance channel for messages to match backend channelId
+    await Notifications.setNotificationChannelAsync("messages", {
+      name: "Messages",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "default",
+      description: "Push notifications for workspace conversations",
+      enableLights: true,
+      enableVibrate: true,
+      lockScreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    });
+
+    // Also create the default channel for other notifications
     await Notifications.setNotificationChannelAsync("default", {
       name: "Notifications",
       importance: Notifications.AndroidImportance.DEFAULT,
