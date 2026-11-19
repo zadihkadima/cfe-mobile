@@ -38,17 +38,17 @@ const baseConfig = {
   android: {
     softwareKeyboardLayoutMode: "resize",
     /*
-     * A path, not the contents: prebuild copies this into android/app/, which
-     * is what lets the installed app register with FCM. Without it
-     * getExpoPushTokenAsync throws and no token is ever recorded, no matter
-     * how the server-side credentials are set up.
+- A path, not the contents: prebuild copies this into android/app/, which
+- is what lets the installed app register with FCM. Without it
+- getExpoPushTokenAsync throws and no token is ever recorded, no matter
+- how the server-side credentials are set up.
      *
-     * Read from the environment first because the file is a credential and so
-     * is gitignored -- on an EAS builder it arrives as a file secret at a
-     * path only that build knows, and the literal below would not exist.
+- Read from the environment first because the file is a credential and so
+- is gitignored -- on an EAS builder it arrives as a file secret at a
+- path only that build knows, and the literal below would not exist.
      */
-    googleServicesFile:
-      process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
+    // googleServicesFile:
+    //   process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
       foregroundImage: "./assets/android-icon-foreground.png",
@@ -125,9 +125,7 @@ const baseConfig = {
     apiUrl: {},
     wsUrl: {},
     router: {},
-    eas: {
-      projectId: "fb2112aa-68cb-420c-85c6-a19fa0af60a8",
-    },
+    eas: { projectId: "f05c0837-a04d-4aa1-bbca-8f46691ac285" },
   },
 };
 
